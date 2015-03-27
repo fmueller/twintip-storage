@@ -49,7 +49,7 @@ paths:
         Returns details about one API
       tags:
       - APIs
-      operationId: 'org.zalando.stups.twintip.crawler.api/read-api'
+      operationId: 'org.zalando.stups.twintip.storage.api/read-api'
       security:
       - oauth2:
         - userinfo
@@ -77,7 +77,7 @@ paths:
         - api/write
       parameters:
       - $ref: '#/parameters/ApplicationID'
-      - name: application
+      - name: apidef
         in: body
         description: API details that will be saved.
         schema:
@@ -156,7 +156,7 @@ definitions:
         {"swagger": "2.0"
          "foo": "bar"}
 
-  ApplicationWrite:
+  APIWrite:
     properties:
       status:
         type: string

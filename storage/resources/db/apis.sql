@@ -3,7 +3,7 @@ SELECT application_id, status
   FROM api;
 
 --name: read-api
-SELECT application_d, status, type, name, version, url, ui, definition
+SELECT application_id, status, type, name, version, url, ui, definition
   FROM api
  WHERE application_id = :application_id;
 
