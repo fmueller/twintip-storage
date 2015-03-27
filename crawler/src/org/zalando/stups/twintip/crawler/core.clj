@@ -16,19 +16,20 @@
   (:require [com.stuartsierra.component :refer [using system-map]]
             [org.zalando.stups.friboo.config :as config]
             [org.zalando.stups.friboo.system :as system]
-            [org.zalando.stups.friboo.log :as log])
+            [org.zalando.stups.friboo.log :as log]
+            [org.zalando.stups.twintip.crawler.jobs :as jobs])
   (:gen-class))
 
 (defn run
   "Initializes and starts the whole system."
   [default-configuration]
   (let [configuration (config/load-configuration
-                        [:cron]
-                        [default-configuration])
+                        [:jobs]
+                        [jobs/default-configuration
+                         default-configuration])
 
         system (system-map
-                 ; TODO cron component
-                 )]
+                 :jobs (jobs/map->Jobs {:configuration (:jobs configuration)}))]
 
     (system/run configuration system)))
 
