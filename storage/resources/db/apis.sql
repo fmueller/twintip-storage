@@ -1,6 +1,27 @@
 -- name: read-apis
-SELECT application_id, status
+SELECT application_id, status, name, version
   FROM api;
+
+-- name: search-apis
+SELECT application_id,
+       status,
+       name,
+       version,
+       ts_rank_cd(vector, query) AS matched_rank,
+       ts_headline('simple', definition, query) AS matched_definition
+FROM (SELECT application_id,
+             status,
+             name,
+             version,
+             definition,
+             setweight(to_tsvector('simple', name), 'A')
+             || setweight(to_tsvector('simple', COALESCE(version, '')), 'B')
+             || setweight(to_tsvector('simple', COALESCE(definition, '')), 'C')
+               as vector
+      FROM api) as apis,
+  to_tsquery('simple', :searchquery) query
+WHERE query @@ vector
+ORDER BY matched_rank DESC;
 
 --name: read-api
 SELECT application_id, status, type, name, version, url, ui, definition

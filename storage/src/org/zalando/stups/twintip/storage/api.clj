@@ -27,11 +27,18 @@
 
 ;; applications
 
-(defn read-apis [_ _ db]
-  (log/debug "Read all APIs.")
-  (-> (sql/read-apis {} {:connection db})
-      (response)
-      (content-type-json)))
+(defn read-apis [{:keys [search]} _ db]
+  (if (nil? search)
+    (do
+      (log/debug "Read all APIs.")
+      (-> (sql/read-apis {} {:connection db})
+          (response)
+          (content-type-json)))
+    (do
+      (log/debug "Search in APIs with query: %s" search)
+      (-> (sql/search-apis {:searchquery search} {:connection db})
+          (response)
+          (content-type-json)))))
 
 (defn read-api [{:keys [application_id]} _ db]
   (log/debug "Read API %s." application_id)

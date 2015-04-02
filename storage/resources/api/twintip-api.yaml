@@ -32,6 +32,12 @@ paths:
       security:
       - oauth2:
         - userinfo
+      parameters:
+        - name: search
+          in: query
+          description: "Search term for API filtering"
+          required: false
+          type: string
       responses:
         200:
           description: List of all APIs
@@ -114,9 +120,28 @@ definitions:
       status:
         type: string
         description: The current status of the crawling
+      name:
+        type: string
+        description: Name of the API
+      version:
+        type: string
+        description: Version of the API
+      matched_rank:
+        type: float
+        description: Rank of search result for ordering
+      matched_definition:
+        type: string
+        description: Matched definition fragments
+    required:
+      - application_id
+      - status
+      - name
+      - version
     example:
       application_id: kio
       status: SUCCESS
+      name: Kio API
+      version: 0.1
 
   APIDetailsRead:
     properties:
