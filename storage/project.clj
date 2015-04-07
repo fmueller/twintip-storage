@@ -15,7 +15,7 @@
   :main ^:skip-aot org.zalando.stups.twintip.storage.core
   :uberjar-name "twintip-storage.jar"
 
-  :plugins [[io.sarnowski/lein-docker "1.0.0"]]
+  :plugins [[io.sarnowski/lein-docker "1.1.0"]]
 
   :docker {:image-name "stups/twintip-storage"}
 
