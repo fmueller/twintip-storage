@@ -43,30 +43,26 @@
   [app-service-url]
   (try
     ; TODO make discovery endpoint configurable
-    (let [discovery (fetch-url app-service-url "/.discovery")
-          definition-url (get discovery "definition")]
+    (let [discovery (fetch-url app-service-url "/.well-known/schema-discovery")
+          schema-url (get discovery "schema_url")
+          schema-type (get discovery "schema_type")
+          ui-url (get discovery "ui_url")]
       (try
-        (let [definition (fetch-url (add-path app-service-url definition-url))]
-          (if (= (get definition "swagger") "2.0")
-            {:status     "SUCCESS"
-             :type       "swagger-2.0"
-             :name       (get-in definition ["info" "title"])
-             :version    (get-in definition ["info" "version"])
-             :url        (get discovery "definition")
-             :ui         (get discovery "ui")
-             :definition (json/write-str definition)}
-
-            ; incompatible definition
-            {:status     "INCOMPATIBLE"
-             :type       nil
-             :name       nil
-             :version    nil
-             :url        (get discovery "definition")
-             :ui         (get discovery "ui")
-             :definition nil}))
+        (let [definition (fetch-url (add-path app-service-url schema-url))
+              swagger-2-0? (and (= schema-type "swagger-2.0")
+                                (= (get definition "swagger") "2.0"))
+              name (when swagger-2-0? (get-in definition ["info" "title"]))
+              version (when swagger-2-0? (get-in definition ["info" "version"]))]
+          {:status     "SUCCESS"
+           :type       schema-type
+           :name       name
+           :version    version
+           :url        schema-url
+           :ui         ui-url
+           :definition (json/write-str definition)})
 
         (catch Exception e
-          (log/debug "Definition unavailable %s: %s" definition-url (str e))
+          (log/debug "Definition unavailable %s: %s" schema-url (str e))
           ; cannot fetch definition of discovery document
           {:status     (str "UNAVAILABLE")
            :type       nil
