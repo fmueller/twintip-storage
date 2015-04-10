@@ -16,6 +16,7 @@
   (:require [com.stuartsierra.component :refer [using system-map]]
             [org.zalando.stups.friboo.config :as config]
             [org.zalando.stups.friboo.system :as system]
+            [org.zalando.stups.friboo.system.credentials :as credentials]
             [org.zalando.stups.friboo.log :as log]
             [org.zalando.stups.twintip.crawler.jobs :as jobs])
   (:gen-class))
@@ -24,12 +25,17 @@
   "Initializes and starts the whole system."
   [default-configuration]
   (let [configuration (config/load-configuration
-                        [:jobs]
+                        [:credentials :jobs]
                         [jobs/default-configuration
                          default-configuration])
 
         system (system-map
-                 :jobs (jobs/map->Jobs {:configuration (:jobs configuration)}))]
+                 :credentials (credentials/map->CredentialUpdater
+                                {:configuration (:credentials configuration)})
+
+                 :jobs (using
+                         (jobs/map->Jobs {:configuration (:jobs configuration)})
+                         [:credentials]))]
 
     (system/run configuration system)))
 

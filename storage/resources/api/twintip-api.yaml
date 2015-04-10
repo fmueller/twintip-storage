@@ -29,9 +29,6 @@ paths:
       tags:
         - APIs
       operationId: 'org.zalando.stups.twintip.storage.api/read-apis'
-      security:
-      - oauth2:
-        - userinfo
       parameters:
         - name: search
           in: query
@@ -56,9 +53,6 @@ paths:
       tags:
       - APIs
       operationId: 'org.zalando.stups.twintip.storage.api/read-api'
-      security:
-      - oauth2:
-        - userinfo
       parameters:
       - $ref: '#/parameters/ApplicationID'
       responses:
@@ -80,7 +74,7 @@ paths:
       operationId: "org.zalando.stups.twintip.storage.api/create-or-update-api!"
       security:
       - oauth2:
-        - api/write
+        - cn
       parameters:
       - $ref: '#/parameters/ApplicationID'
       - name: apidef
@@ -228,5 +222,4 @@ securityDefinitions:
     type: oauth2
     description: OAuth 2.0 access control.
     scopes:
-      userinfo: Grants everyone read access to all APIs.
-      api/write: Grants write access to save APIs.
+      cn: Grants write access to save APIs.
