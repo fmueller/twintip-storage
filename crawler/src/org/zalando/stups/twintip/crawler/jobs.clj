@@ -1,6 +1,7 @@
 (ns org.zalando.stups.twintip.crawler.jobs
   (:require [org.zalando.stups.friboo.system.cron :refer [def-cron-component]]
             [org.zalando.stups.friboo.log :as log]
+            [org.zalando.stups.friboo.config :refer [require-config]]
             [overtone.at-at :refer [every]]
             [clj-http.lite.client :as client]
             [clojure.data.json :as json]))
@@ -87,9 +88,11 @@
 (defn- crawl
   "One run to get API definitions of all applications."
   [configuration]
-  (let [{:keys [kio-url storage-url]} configuration]
-    (log/info "Starting new crawl run with %s..." kio-url)
-    (try
+  (try
+    (let [kio-url (require-config configuration :kio-url)
+          storage-url (require-config configuration :storage-url)]
+      (log/info "Starting new crawl run with %s..." kio-url)
+
       (doseq [app (fetch-apps kio-url)]
         (let [app-id (get app "id")
               app-service-url (get app "service_url")]
@@ -102,9 +105,9 @@
                            :body         (json/write-str api-info)})
               (log/info "Updated %s." app-id)
               (catch Exception e
-                (log/error e "Could not store result for %s in %s: %s" app-id storage-url (str e)))))))
-      (catch Exception e
-        (log/error e "Could not fetch apps %s." (str e))))))
+                (log/error e "Could not store result for %s in %s: %s" app-id storage-url (str e))))))))
+    (catch Exception e
+      (log/error e "Could not fetch apps %s." (str e)))))
 
 (def-cron-component
   Jobs []
