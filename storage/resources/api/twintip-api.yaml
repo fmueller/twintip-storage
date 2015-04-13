@@ -42,6 +42,11 @@ paths:
             type: array
             items:
               $ref: '#/definitions/APISummaryRead'
+            example:
+              - application_id: kio
+                status: SUCCESS
+                name: Kio API
+                version: 0.1
         default:
           $ref: '#/responses/Error'
 
@@ -84,7 +89,7 @@ paths:
           $ref: '#/definitions/APIWrite'
         required: true
       responses:
-        200:
+        201:
           description: API was saved.
         default:
           $ref: '#/responses/Error'
@@ -131,11 +136,6 @@ definitions:
       - status
       - name
       - version
-    example:
-      application_id: kio
-      status: SUCCESS
-      name: Kio API
-      version: 0.1
 
   APIDetailsRead:
     properties:
