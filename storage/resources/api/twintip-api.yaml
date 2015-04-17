@@ -77,9 +77,6 @@ paths:
       tags:
       - APIs
       operationId: "org.zalando.stups.twintip.storage.api/create-or-update-api!"
-      security:
-      - oauth2:
-        - cn
       parameters:
       - $ref: '#/parameters/ApplicationID'
       - name: apidef
@@ -217,9 +214,3 @@ definitions:
     example:
       message: Internal Server Error
 
-securityDefinitions:
-  oauth2:
-    type: oauth2
-    description: OAuth 2.0 access control.
-    scopes:
-      cn: Grants write access to save APIs.
