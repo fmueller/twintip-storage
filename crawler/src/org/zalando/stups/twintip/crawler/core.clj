@@ -30,12 +30,7 @@
                          default-configuration])
 
         system (system-map
-                 :credentials (credentials/map->CredentialUpdater
-                                {:configuration (:credentials configuration)})
-
-                 :jobs (using
-                         (jobs/map->Jobs {:configuration (:jobs configuration)})
-                         [:credentials]))]
+                 :jobs (jobs/map->Jobs {:configuration (:jobs configuration)}))]
 
     (system/run configuration system)))
 

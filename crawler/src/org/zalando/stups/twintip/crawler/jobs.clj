@@ -100,7 +100,7 @@
           (let [api-info (get-app-api-info app-service-url)]
             (log/debug "Storing result for %s: %s" app-id api-info)
             (try
-              (client/put (add-path storage-url "/apis/" app-id)
+              (client/put (add-path storage-url "/apps/" app-id)
                           {:content-type :json
                            :body         (json/write-str api-info)})
               (log/info "Updated %s." app-id)

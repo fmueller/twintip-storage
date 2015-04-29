@@ -21,7 +21,7 @@ paths:
 
   # applications
 
-  '/apis':
+  '/apps':
     get:
       summary: list crawled APIs
       description: |
@@ -41,16 +41,39 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/APISummaryRead'
-            example:
-              - application_id: kio
-                status: SUCCESS
-                name: Kio API
-                version: 0.1
+              type: object
+              properties:
+                application_id:
+                  type: string
+                  description: Unique identifier of the application
+                  example: kio
+                status:
+                  type: string
+                  description: The current status of the crawling
+                  example: SUCCES
+                name:
+                  type: string
+                  description: Name of the API
+                  example: Kio API
+                version:
+                  type: string
+                  description: Version of the API
+                  example: "1.0"
+                matched_rank:
+                  type: number
+                  description: Rank of search result for ordering
+                matched_definition:
+                  type: string
+                  description: Matched definition fragments
+              required:
+                - application_id
+                - status
+                - name
+                - version
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{application_id}':
+  '/apps/{application_id}':
     get:
       summary: read API
       description: |
@@ -64,7 +87,42 @@ paths:
         200:
           description: Details of one API
           schema:
-            $ref: '#/definitions/APIDetailsRead'
+            type: object
+            properties:
+              application_id:
+                type: string
+                description: Unique identifier of the application
+                example: kio
+              status:
+                type: string
+                description: The current status of the crawling
+                example: SUCCESS
+              type:
+                type: string
+                description: Type of API definition
+                example: SWAGGER-2.0
+              name:
+                type: string
+                description: Name of the API
+                example: Kio API
+              version:
+                type: string
+                description: Version of the API
+                example: "1.0"
+              url:
+                type: string
+                description: URL pointing to the API definition file
+                example: https://kio.example.com/swagger.json
+              ui:
+                type: string
+                description: URL pointing to the UI for browsing the API
+                example: https://kio.example.com/ui/
+              definition:
+                type: string
+                description: The API definition
+                example: |
+                  {"swagger": "2.0"
+                   "foo": "bar"}
         404:
           description: Not found
         default:
@@ -83,7 +141,7 @@ paths:
         in: body
         description: API details that will be saved.
         schema:
-          $ref: '#/definitions/APIWrite'
+          $ref: '#/definitions/UpdateAPI'
         required: true
       responses:
         201:
@@ -108,109 +166,50 @@ responses:
       $ref: '#/definitions/Error'
 
 definitions:
-  APISummaryRead:
+  UpdateAPI:
+    type: object
     properties:
-      application_id:
-        type: string
-        description: Unique identifier of the application
       status:
         type: string
         description: The current status of the crawling
+        example: SUCCESS
+      type:
+        type: string
+        description: Type of API definition
+        example: SWAGGER-2.0
       name:
         type: string
         description: Name of the API
+        example: Kio API
       version:
         type: string
         description: Version of the API
-      matched_rank:
-        type: float
-        description: Rank of search result for ordering
-      matched_definition:
+        example: "1.0"
+      url:
         type: string
-        description: Matched definition fragments
+        description: URL pointing to the API definition file
+        example: https://kio.example.com/swagger.json
+      ui:
+        type: string
+        description: URL pointing to the UI for browsing the API
+        example: https://kio.example.com/ui/
+      definition:
+        type: string
+        description: The API definition
+        example: |
+          {"swagger": "2.0"
+           "foo": "bar"}
     required:
-      - application_id
       - status
+      - type
       - name
       - version
-
-  APIDetailsRead:
-    properties:
-      application_id:
-        type: string
-        description: Unique identifier of the application
-      status:
-        type: string
-        description: The current status of the crawling
-      type:
-        type: string
-        description: Type of API definition
-      name:
-        type: string
-        description: Name of the API
-      version:
-        type: string
-        description: Version of the API
-      url:
-        type: string
-        description: URL pointing to the API definition file
-      ui:
-        type: string
-        description: URL pointing to the UI for browsing the API
-      definition:
-        type: string
-        description: The API definition
-    example:
-      application_id: kio
-      status: FETCHED
-      type: SWAGGER-2.0
-      name: Kio
-      version: "0.1"
-      url: https://kio.example.com/swagger.json
-      ui: https://kio.example.com/ui/
-      definition: |
-        {"swagger": "2.0"
-         "foo": "bar"}
-
-  APIWrite:
-    properties:
-      status:
-        type: string
-        description: The current status of the crawling
-      type:
-        type: string
-        description: Type of API definition
-      name:
-        type: string
-        description: Name of the API
-      version:
-        type: string
-        description: Version of the API
-      url:
-        type: string
-        description: URL pointing to the API definition file
-      ui:
-        type: string
-        description: URL pointing to the UI for browsing the API
-      definition:
-        type: string
-        description: The API definition
-    example:
-      status: FETCHED
-      type: SWAGGER-2.0
-      name: Kio
-      version: "0.1"
-      url: https://kio.example.com/swagger.json
-      ui: https://kio.example.com/ui/
-      definition: |
-        {"swagger": "2.0"
-         "foo": "bar"}
+      - url
+      - ui
+      - definition
 
   Error:
     type: object
     properties:
       message:
         type: string
-    example:
-      message: Internal Server Error
-
