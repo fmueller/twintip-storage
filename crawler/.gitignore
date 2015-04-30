@@ -1,3 +1,6 @@
+# test credentials
+/user.json
+/client.json
 
 ### Leiningen template
 pom.xml

@@ -3,15 +3,16 @@
             [org.zalando.stups.friboo.log :as log]
             [org.zalando.stups.friboo.config :refer [require-config]]
             [overtone.at-at :refer [every]]
-            [clj-http.lite.client :as client]
-            [clojure.data.json :as json]))
+            [clj-http.client :as client]
+            [clojure.data.json :as json]
+            [org.zalando.stups.friboo.system.oauth2 :as oauth2]))
 
 (def default-configuration
   {:jobs-cpu-count        1
    :jobs-every-ms         60000
    :jobs-initial-delay-ms 1000})
 
-(defn- add-path
+(defn- conpath
   "Concatenates path elements to an URL."
   [url & path]
   (let [[x & xs] path]
@@ -24,32 +25,22 @@
         (recur url xs))
       url)))
 
-(defn- fetch-url
-  "GETs a JSON document and returns the parsed result."
-  ([url]
-   (-> (client/get url)
-       :body
-       json/read-str))
-  ([url path]
-   (fetch-url (add-path url path))))
-
-(defn fetch-apps
-  "Fetches list of all applications."
-  [kio-url]
-  ; TODO filter only active
-  (fetch-url kio-url "/apps"))
-
 (defn- get-app-api-info
   "Fetch information about one application."
   [app-service-url]
   (try
     ; TODO make discovery endpoint configurable
-    (let [discovery (fetch-url app-service-url "/.well-known/schema-discovery")
-          schema-url (get discovery "schema_url")
-          schema-type (get discovery "schema_type")
-          ui-url (get discovery "ui_url")]
+    (let [discovery (:body (client/get (conpath app-service-url "/.well-known/schema-discovery")
+                                       {:as :json}))
+          schema-url (:schema_url discovery)
+          schema-url (if (.startsWith schema-url "/")
+                       (conpath app-service-url schema-url)
+                       schema-url)
+          schema-type (:schema_type discovery)
+          ui-url (:ui_url discovery)]
       (try
-        (let [definition (fetch-url (add-path app-service-url schema-url))
+        (let [definition (:body (client/get schema-url
+                                            {:as :json-string-keys}))
               swagger-2-0? (and (= schema-type "swagger-2.0")
                                 (= (get definition "swagger") "2.0"))
               name (when swagger-2-0? (get-in definition ["info" "title"]))
@@ -87,31 +78,36 @@
 
 (defn- crawl
   "One run to get API definitions of all applications."
-  [configuration]
+  [configuration tokens]
   (try
     (let [kio-url (require-config configuration :kio-url)
-          storage-url (require-config configuration :storage-url)]
-      (log/info "Starting new crawl run with %s..." kio-url)
+          twintip-storage-url (require-config configuration :twintip-storage-url)]
+      (log/debug "Starting new crawl run with %s..." kio-url)
 
-      (doseq [app (fetch-apps kio-url)]
-        (let [app-id (get app "id")
-              app-service-url (get app "service_url")]
-          (log/debug "Fetching update for %s from %s..." app-id app-service-url)
-          (let [api-info (get-app-api-info app-service-url)]
-            (log/debug "Storing result for %s: %s" app-id api-info)
+      (let [apps (:body (client/get (conpath kio-url "/apps")
+                                    {:oauth-token (oauth2/access-token :kio-ro-api tokens)
+                                     :as          :json}))]
+        (log/info "Found %s apps in Kio; fetching their APIs..." (count apps))
+        (log/debug "Fetching APIs of the following apps: %s" apps)
+
+        (doseq [{:keys [id service_url] :as app} apps]
+          (log/debug "Fetching update for %s from %s..." id service_url)
+          (let [api-info (get-app-api-info service_url)]
+            (log/debug "Storing result for %s: %s" id api-info)
             (try
-              (client/put (add-path storage-url "/apps/" app-id)
-                          {:content-type :json
-                           :body         (json/write-str api-info)})
-              (log/info "Updated %s." app-id)
+              (client/put (conpath twintip-storage-url "/apps/" id)
+                          {:oauth-token  (oauth2/access-token :twintip-rw-api tokens)
+                           :content-type :application/json
+                           :form-params  api-info})
+              (log/info "Updated %s." id)
               (catch Exception e
-                (log/error e "Could not store result for %s in %s: %s" app-id storage-url (str e))))))))
-    (catch Exception e
+                (log/error e "Could not store result for %s in %s: %s" id twintip-storage-url (str e))))))))
+    (catch Throwable e
       (log/error e "Could not fetch apps %s." (str e)))))
 
 (def-cron-component
-  Jobs []
+  Jobs [tokens]
 
   (let [{:keys [every-ms initial-delay-ms]} configuration]
 
-    (every every-ms (partial crawl configuration) pool :initial-delay initial-delay-ms :desc "API crawling")))
+    (every every-ms #(crawl configuration tokens) pool :initial-delay initial-delay-ms :desc "API crawling")))

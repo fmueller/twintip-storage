@@ -17,6 +17,7 @@
             [org.zalando.stups.friboo.config :as config]
             [org.zalando.stups.friboo.system :as system]
             [org.zalando.stups.friboo.system.credentials :as credentials]
+            [org.zalando.stups.friboo.system.oauth2 :as oauth2]
             [org.zalando.stups.friboo.log :as log]
             [org.zalando.stups.twintip.crawler.jobs :as jobs])
   (:gen-class))
@@ -25,12 +26,20 @@
   "Initializes and starts the whole system."
   [default-configuration]
   (let [configuration (config/load-configuration
-                        [:credentials :jobs]
+                        [:credentials :jobs :oauth2]
                         [jobs/default-configuration
                          default-configuration])
 
         system (system-map
-                 :jobs (jobs/map->Jobs {:configuration (:jobs configuration)}))]
+                 :credentials (credentials/map->CredentialUpdater {:configuration (:credentials configuration)})
+                 :tokens (using
+                           (oauth2/map->OAUth2TokenRefresher {:configuration (:oauth2 configuration)
+                                                            :tokens {:kio-ro-api ["uid"]
+                                                                     :twintip-rw-api ["uid"]}})
+                           [:credentials])
+                 :jobs (using
+                         (jobs/map->Jobs {:configuration (:jobs configuration)})
+                         [:tokens]))]
 
     (system/run configuration system)))
 
