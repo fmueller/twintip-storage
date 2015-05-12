@@ -5,3 +5,5 @@ MAINTAINER Zalando SE
 COPY target/twintip-crawler.jar /
 
 CMD java $(java-dynamic-memory-opts) -jar /twintip-crawler.jar
+
+ADD /scm-source.json /scm-source.json
