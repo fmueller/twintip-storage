@@ -14,7 +14,8 @@
   :main ^:skip-aot org.zalando.stups.twintip.crawler.core
   :uberjar-name "twintip-crawler.jar"
 
-  :plugins [[io.sarnowski/lein-docker "1.1.0"]]
+  :plugins [[io.sarnowski/lein-docker "1.1.0"]
+            [org.zalando.stups/lein-scm-source "0.1.0"]]
 
   :docker {:image-name "stups/twintip-crawler"}
 
@@ -24,6 +25,7 @@
                   ["vcs" "tag"]
                   ["clean"]
                   ["uberjar"]
+                  ["scm-source"]
                   ["docker" "build"]
                   ["docker" "push"]
                   ["change" "version" "leiningen.release/bump-version"]
