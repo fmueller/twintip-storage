@@ -138,6 +138,10 @@ paths:
       tags:
       - APIs
       operationId: "org.zalando.stups.twintip.storage.api/create-or-update-api!"
+      security:
+        - oauth2:
+          - uid
+          - application.write_all
       parameters:
       - $ref: '#/parameters/ApplicationID'
       - name: apidef

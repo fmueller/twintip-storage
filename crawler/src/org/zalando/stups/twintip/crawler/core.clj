@@ -35,7 +35,7 @@
                  :tokens (using
                            (oauth2/map->OAUth2TokenRefresher {:configuration (:oauth2 configuration)
                                                             :tokens {:kio-ro-api ["uid"]
-                                                                     :twintip-rw-api ["uid"]}})
+                                                                     :twintip-rw-api ["uid" "application.write_all"]}})
                            [:credentials])
                  :jobs (using
                          (jobs/map->Jobs {:configuration (:jobs configuration)})
