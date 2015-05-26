@@ -31,25 +31,25 @@
   (if (nil? search)
     (do
       (log/debug "Read all APIs.")
-      (-> (sql/read-apis {} {:connection db})
+      (-> (sql/cmd-read-apis {} {:connection db})
           (response)
           (content-type-json)))
     (do
       (log/debug "Search in APIs with query: %s" search)
-      (-> (sql/search-apis {:searchquery search} {:connection db})
+      (-> (sql/cmd-search-apis {:searchquery search} {:connection db})
           (response)
           (content-type-json)))))
 
 (defn read-api [{:keys [application_id]} _ db]
   (log/debug "Read API %s." application_id)
-  (-> (sql/read-api
+  (-> (sql/cmd-read-api
         {:application_id application_id}
         {:connection db})
       (single-response)
       (content-type-json)))
 
 (defn create-or-update-api! [{:keys [apidef application_id]} _ db]
-  (sql/create-or-update-api!
+  (sql/cmd-create-or-update-api!
     (merge apidef {:application_id application_id})
     {:connection db})
   (log/audit "Created/updated API %s using data %s." application_id apidef)

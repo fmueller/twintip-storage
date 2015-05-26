@@ -14,7 +14,7 @@
 
 (ns org.zalando.stups.twintip.storage.sql
   (:require [yesql.core :refer [defqueries]]
-            [org.zalando.stups.friboo.system.db :refer [def-db-component]]))
+            [org.zalando.stups.friboo.system.db :refer [def-db-component generate-hystrix-commands]]))
 
 (def-db-component DB :auto-migration? true)
 
@@ -26,3 +26,4 @@
    :db-password    "postgres"})
 
 (defqueries "db/apis.sql")
+(generate-hystrix-commands)
