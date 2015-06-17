@@ -2,7 +2,7 @@ swagger: '2.0'
 
 # basic meta information
 info:
-  title: TWINTIP API
+  title: TWINTIP Storage API
   version: '0.1'
   description: TWINTIP is STUPS' API definition crawler.
 

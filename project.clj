@@ -7,7 +7,7 @@
 
   :min-lein-version "2.0.0"
 
-  :dependencies [[org.zalando.stups/friboo "0.21.0"]
+  :dependencies [[org.zalando.stups/friboo "0.22.0"]
                  [yesql "0.5.0-rc3"]]
 
   :main ^:skip-aot org.zalando.stups.twintip.storage.core
@@ -16,7 +16,9 @@
   :plugins [[io.sarnowski/lein-docker "1.1.0"]
             [org.zalando.stups/lein-scm-source "0.2.0"]]
 
-  :docker {:image-name "stups/twintip-storage"}
+  :docker {:image-name #=(eval (str (some-> (System/getenv "DEFAULT_DOCKER_REGISTRY")
+                                            (str "/"))
+                                    "stups/twintip-storage"))}
 
   :release-tasks [["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
