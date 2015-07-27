@@ -1,4 +1,4 @@
-(defproject org.zalando.stups/twintip-storage "0.9.0"
+(defproject org.zalando.stups/twintip-storage "0.10.0-SNAPSHOT"
   :description "An API definition crawler."
   :url "https://github.com/zalando-stups/twintip"
 
