@@ -1,4 +1,4 @@
-(defproject org.zalando.stups/twintip-storage "0.12.0-SNAPSHOT"
+(defproject org.zalando.stups/twintip-storage "0.7.0-SNAPSHOT"
   :description "An API definition crawler."
   :url "https://github.com/zalando-stups/twintip"
 
@@ -7,7 +7,7 @@
 
   :min-lein-version "2.0.0"
 
-  :dependencies [[org.zalando.stups/friboo "0.32.0"]
+  :dependencies [[org.zalando.stups/friboo "1.0.0-RC1"]
                  [yesql "0.5.0-rc3"]]
 
   :main ^:skip-aot org.zalando.stups.twintip.storage.core

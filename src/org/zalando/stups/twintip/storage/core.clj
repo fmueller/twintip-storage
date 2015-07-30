@@ -25,16 +25,14 @@
   "Initializes and starts the whole system."
   [default-configuration]
   (let [configuration (config/load-configuration
-                        [:db :http]
+                        [:db :http :audit-log]
                         [sql/default-db-configuration
                          api/default-http-configuration
                          default-configuration])
 
-        system (system-map
-                 :db (sql/map->DB {:configuration (:db configuration)})
-                 :api (using
-                        (api/map->API {:configuration (:http configuration)})
-                        [:db]))]
+        system (system/http-system-map configuration
+                                       api/map->API [:db]
+                                       :db (sql/map->DB {:configuration (:db configuration)}))]
 
     (system/run configuration system)))
 
