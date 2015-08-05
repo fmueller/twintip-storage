@@ -1,5 +1,7 @@
 # TWINTIP
 
+[![Build Status](https://travis-ci.org/zalando-stups/twintip-storage.svg?branch=master)](https://travis-ci.org/zalando-stups/twintip-storage)
+
 TWINTIP is an API definition crawler, that constantly crawls a list of applications for their API definitions.
 It works in conjunction with [Kio](http://zalando-stups.github.io) to get a list of all applications and their
 service endpoints and fetches their swagger specifications.
