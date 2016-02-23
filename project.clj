@@ -7,7 +7,7 @@
 
   :min-lein-version "2.0.0"
 
-  :dependencies [[org.zalando.stups/friboo "1.5.3"]
+  :dependencies [[org.zalando.stups/friboo "1.6.0"]
                  [yesql "0.5.1"]]
 
   :main ^:skip-aot org.zalando.stups.twintip.storage.core
