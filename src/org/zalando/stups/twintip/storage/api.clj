@@ -17,8 +17,7 @@
             [org.zalando.stups.twintip.storage.sql :as sql]
             [ring.util.response :refer :all]
             [org.zalando.stups.friboo.ring :refer :all]
-            [org.zalando.stups.friboo.log :as log]
-            [cheshire.core :as json]))
+            [org.zalando.stups.friboo.log :as log]))
 
 ; define the API component and its dependencies
 (def-http-component API "api/twintip-api.yaml" [db])
