@@ -164,6 +164,22 @@ paths:
         default:
           $ref: '#/responses/Error'
 
+  '/apps/{application_id}/definition':
+    get:
+      summary: read API definition
+      description: |
+        Returns crawled OpenAPI definition of one API
+      tags:
+      - APIs
+      operationId: 'org.zalando.stups.twintip.storage.api/read-api-definition'
+      parameters:
+      - $ref: '#/parameters/ApplicationID'
+      responses:
+        200:
+          description: OpenAPI definition of one API
+          schema:
+            type: object
+
 # definitions
 
 parameters:

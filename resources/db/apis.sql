@@ -28,6 +28,11 @@ SELECT application_id, status, type, name, version, url, ui, definition
   FROM api
  WHERE application_id = :application_id;
 
+ --name: read-api-definition
+ SELECT definition
+   FROM api
+  WHERE application_id = :application_id;
+
 -- name: create-or-update-api!
 WITH api_update AS (
      UPDATE api

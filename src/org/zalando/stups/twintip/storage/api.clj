@@ -17,7 +17,9 @@
             [org.zalando.stups.twintip.storage.sql :as sql]
             [ring.util.response :refer :all]
             [org.zalando.stups.friboo.ring :refer :all]
-            [org.zalando.stups.friboo.log :as log]))
+            [org.zalando.stups.friboo.log :as log]
+            [cheshire.core :as json]
+            [clojure.pprint :refer [pprint]]))
 
 ; define the API component and its dependencies
 (def-http-component API "api/twintip-api.yaml" [db])
@@ -47,6 +49,13 @@
         {:connection db})
       (single-response)
       (content-type-json)))
+
+(defn read-api-definition [{:keys [application_id]} _ db]
+  (log/debug "Read API %s definition." application_id)
+  (let [result (:definition (first (sql/cmd-read-api-definition
+                                     {:application_id application_id}
+                                     {:connection db})))]
+    (content-type-json (response result))))
 
 (defn create-or-update-api! [{:keys [apidef application_id]} _ db]
   (sql/cmd-create-or-update-api!
