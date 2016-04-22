@@ -18,8 +18,7 @@
             [ring.util.response :refer :all]
             [org.zalando.stups.friboo.ring :refer :all]
             [org.zalando.stups.friboo.log :as log]
-            [cheshire.core :as json]
-            [clojure.pprint :refer [pprint]]))
+            [cheshire.core :as json]))
 
 ; define the API component and its dependencies
 (def-http-component API "api/twintip-api.yaml" [db])
